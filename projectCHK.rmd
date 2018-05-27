@@ -1,8 +1,11 @@
 ANALYSIS OF PROSPER LOAN DATA by CHUNDI HIMAKIRAN KUMAR
 ========================================================
 
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+```
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
+```{r packages}
 # Load all of the packages that you end up using in your analysis in this code
 # chunk.
 
@@ -50,6 +53,7 @@ variables namely 'CreditGrade','Term','LoanStatus','BorrowerAPR',
 str(ld)
 ```
 
+
 > **Understanding the range of values for each column**: 
 
 > ***CreditGrade***:
@@ -71,6 +75,13 @@ range(ld$Term)
 table(ld$Term)
 
 ```
+
+*** Converting Term to factors ***
+```{r Term to factors}
+ld$Term <- factor(ld$Term, levels=c(12,36,60), ordered=TRUE)
+
+```
+
 
 > ***Loan Status***:
 
@@ -124,138 +135,182 @@ table(ld$ProsperScore)
 
 ```
 
+
+
 # Univariate Plots Section
+
+
 
 
 ```{r Term Histogram}
 ggplot(aes(x = Term), data = ld) +
-  geom_histogram()
+  geom_bar() +
+  ggtitle("Term Histogram")
 
 ```
+
+** Term distribution of loans **
+
+```{r summary term}
+summary(ld$Term)
+```
+
+
+It is observed that all the loans are either of 12,36 or 60 months duration. The maximum number of loans have a term of 36 
+months followed by 60 month term loans.
 
 ```{r CreditGrade Histogram}
 ggplot(aes(x = CreditGrade), data = ld) +
-  geom_histogram(stat = "count")
+  geom_histogram(stat = "count") +
+  ggtitle("CreditGrade Histogram")
 
 ```
+
+```{r summary Credit Grade}
+summary(ld$CreditGrade)
+```
+
+It is observed that max loans have no credit grade assigned. Among the rest 'C' Credit Grade loans are marginally 
+higher than the rest grades.
 
 ```{r LoanStatus Histogram}
 ggplot(aes(x = LoanStatus), data = ld) +
-  geom_histogram(stat = "count")
+  geom_histogram(stat = "count") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  ggtitle("LoanStatus Histogram")
 
 ```
+
+```{r summary Loan Status}
+summary(ld$LoanStatus)
+```
+
+It is observed that approximately 5000 loans have defaulted status and maximum loans in the dataset are current. The
+pst due loans are comparitveley very less.
 
 ```{r Borrower APR Histogram}
 ggplot(aes(x = BorrowerAPR), data = ld) +
   geom_histogram(binwidth = 0.005) +
-  scale_x_continuous(breaks = seq(0,0.5,0.05))
+  scale_x_continuous(breaks = seq(0,0.5,0.05)) +
+  ggtitle("BorrowerAPR Histogram")
 
 ```
+
+```{r summary Borrower APR}
+summary(ld$BorrowerAPR)
+```
+
+It is observed that maximum loans have been issued at an APR of 36%.
 
 ```{r EmploymentStatus Histogram}
 ggplot(aes(x = EmploymentStatus), data = ld) +
-  geom_histogram(stat = "count")
+  geom_histogram(stat = "count") +
+  ggtitle("EmploymentStatus Histogram")
 
 ```
+
+```{r summary Employment Status}
+summary(ld$EmploymentStatus)
+```
+
+It is observed that maximum loans have been issued to Employed people and very few loans have been issued to 
+not employed and part time people.
 
 ```{r IncomeRange Histogram}
 ggplot(aes(x = IncomeRange), data = ld) +
-  geom_histogram(stat = "count")
+  geom_histogram(stat = "count") +
+  ggtitle("IncomeRange Histogram") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
 ```
+
+```{r summary Income Range}
+summary(ld$IncomeRange)
+```
+
+The histogram is a perfect bell curve and shows that max loans have been given to the middle income groups with 
+$25K-49K and $50K-74.99K and the loans fall off on either side as the income rises and falls.
 
 ```{r Loan Original Amount Histogram}
 ggplot(aes(x = LoanOriginalAmount), data = ld) +
   geom_histogram(binwidth = 1000) +
-  scale_x_continuous(breaks = seq(0,35000,2500))
+  scale_x_continuous(breaks = seq(0,35000,2500)) +
+  xlab("LoanOriginalAmount(USD)")
+  ggtitle("LoanOriginalAmount Histogram")
 
 ```
+
+```{r summary Loan Original Amount}
+summary(ld$LoanOriginalAmount)
+```
+
+The most frequently sanctioned Loan amounts seems to be 4K$, 10K and 15K dollars. There are also loans 
+sanctioned for 35K dollars.
 
 ```{r Listing Category Histogram}
 ggplot(aes(x = ListingCategory..numeric.), data = ld) +
   geom_histogram(stat = "count") +
-  scale_x_continuous(breaks = seq(0,20,1))
+  scale_x_continuous(breaks = seq(0,20,1)) +
+  ggtitle("ListingCategory Histogram")
 
 ```
+
+```{r summary Listing Category}
+summary(ld$ListingCategory..numeric.)
+```
+
+Maximum loans have been sanctioned under listing catgeory 1(Debt Consolidation) followd by 0(Not Available) and 7(Other).
+Very few loans have been sanctioned to 8 - Baby&Adoption, 9 - Boat, 10 - Cosmetic Procedure, 11 - Engagement Ring, 
+12 - Green Loans followed by 18 - Taxes, 19 - Vacation, 20 - Wedding Loans.
 
 ```{r Borrower State Histogram}
 ggplot(aes(x = BorrowerState), data = ld) +
-  geom_histogram(stat = "count")
+  geom_histogram(stat = "count") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  ggtitle("BorrowerState Histogram")
 
 ```
+
+```{r summary BorrowerState}
+summary(ld$BorrowerState)
+```
+
+Max lons have been sanctioned to people from state of California followed by approximatley equal number of loans 
+to people from Florida, Illinois, New York and Texas.
 
 ```{r Employment Status Duration Histogram}
 ggplot(aes(x = EmploymentStatusDuration), data = ld) +
   geom_histogram(binwidth=30) +
-  scale_x_continuous(breaks = seq(0,600,30))
+  scale_x_continuous(breaks = seq(0,600,30)) +
+  ggtitle("EmploymentStatusDuration Histogram")
 
 ```
+
+```{r summary Employment Status Duration}
+summary(ld$EmploymentStatusDuration)
+```
+
+It is observed that max loans have been given to people who have only spent a month or two in their employment status and there is a clear downward march of loans given out decreasing as the employment status duration increases.
+
+
 
 ```{r Prosper Score Histogram}
-ggplot(aes(x = ProsperScore), data = ld) +
-  geom_histogram() +
-  scale_x_continuous(breaks = seq(1,11,1))
+ld$ProsperScore <- factor(ld$ProsperScore)
+ggplot(aes(x = ProsperScore), data = ld_without_NA) +
+  geom_bar() +
+  scale_x_continuous(breaks = seq(1,11,1)) +
+  ggtitle("ProsperScore Histogram")
 
 ```
 
-```{r Prosper Score Histogram colored}
-ggplot(aes(x = ProsperScore), data = subset(ld,!is.na(IsBorrowerHomeowner))) +
-  geom_histogram(aes(color = IsBorrowerHomeowner)) +
-  scale_x_continuous(breaks = seq(1,11,1))
-
+```{r summary Propser Score}
+summary(ld$ProsperScore)
 ```
+
+It is observed that max loans have a prosper score of 4,6 and 8 while there are comparitevely very few loans having the worst score of 1 and best score of 11. 
+
 
 # Univariate Analysis
-
-> **TERM HISTOGRAM ANALYSIS**:  It is observed that all the loans are either of
-12,36 or 60 months duration. The maximum number of loans have a term of 36 
-months followed by 60 month term loans.
-
-> **CREDIT GRADE HISTOGRAM ANALYSIS**:  It is observed that max loans have no
-credit grade assigned. Among the rest 'C' Credit Grade loans are marginally 
-higher than the rest grades.
-
-> **LOAN STATUS HISTOGRAM ANALYSIS**:  It is observed that approximately 5000 
-loans have defaulted status and maximum loans in the dataset are current. The
-pst due loans are comparitveley very less.
-
-> **BORROWER APR HISTOGRAM ANALYSIS**:  It is observed that maximum loans have 
-been issued at an APR of 36%.
-
-> **EMPLOYMENT STATUS HISTOGRAM ANALYSIS**:  It is observed that maximum loans 
-have been issued to Employed people and very few loans have been issued to 
-not employed and part time people.
-
-> **INCOME RANGE HISTOGRAM ANALYSIS**:  The histogram is a perfect bell curve 
-and shows that max loans have been given to the middle income groups with 
-$25K-49K and $50K-74.99K and the loans fall off on either side as the income
-rises and falls.
-
-> **LOAN ORIGINAL AMOUNT HISTOGRAM ANALYSIS**:  The most frequently sanctioned
-Loan amounts seems to be 4K$, 10K and 15K dollars. There are also loans 
-sanctioned for 35K dollars.
-
-> **LISTING CATEGORY HISTOGRAM ANALYSIS**:  Maximum loans have been sanctioned 
-listing catgeory 1(Debt Consolidation) followd by 0(Not Available) and 7(Other).
-Very few loans have been sanctioned to 8 - Baby&Adoption, 9 - Boat, 
-10 - Cosmetic Procedure, 11 - Engagement Ring, 12 - Green Loans 
-followed by 18 - Taxes, 19 - Vacation, 20 - Wedding Loans
-
-> **BORROWER STATE HISTOGRAM ANALYSIS**:  Max lons have been sanctioned to 
-people from state of California followed by approximatley equal number of loans 
-to people from Florida, Illinois, New York and Texas.
-
-> **EMPLOYMENT STATUS DURATION HISTOGRAM ANALYSIS**:  It is observed that max
-loans have been given to people who have only spent a month or two in their
-employment status and there is a clear downward march of loans given out 
-decreasing as the employment status duration increases.
-
-> **PROSPER SCORE  HISTOGRAM ANALYSIS**:  It is observed that max
-loans have a prosper score of 4,6 and 8 while there are comparitevely very 
-few loans having the worst score of 1 and best score of 11. We also see that
-maximum loans have been given to non home owners as compared to home owners
-across all the prosper score ratings.
-
 
 ### Main features of interest in your dataset?
 
@@ -278,159 +333,209 @@ out to new employees upon getting a job within the first two months.
 
 # Bivariate Plots Section
 
+```{r Prosper Score Histogram colored}
+ggplot(aes(x = ProsperScore), data = ld_without_NA) +
+  geom_histogram(aes(color = IsBorrowerHomeowner)) +
+  ggtitle("PropserScore Histogram Colored by Home Owners")
+
+```
+
+We see that maximum loans have been given to non home owners as compared to home owners across all the prosper score ratings.
+
 ```{r Term values distribution}
 table(ld$Term)
 ```
 
 
-```{r echo=FALSE, Term_BorrowerAPR}
-ggplot(aes(x = BorrowerAPR, y = Term), data = ld)+
-  geom_point(alpha = 1/20)
+```{r echo=FALSE, BorrowerAPR_Term}
+ggplot(aes(x = Term, y = BorrowerAPR), data = ld)+
+  geom_boxplot() +
+  ggtitle("BorrowerAPR vs Term")
 ```
+
+There are only three values of term ie 12,36 and 60 months.We can see that the median BorrowerAPR is approximately the same for all three terms.
+But the range of BorrowerAPR values is much larger for 36 Months Term Loans than others.
+
 
 ```{r echo=FALSE, BorrowerAPR_LoanOriginalAmount}
 ggplot(aes(x = LoanOriginalAmount, y = BorrowerAPR), data = ld)+
-  geom_jitter(alpha=1/20)
+  geom_jitter(alpha=1/20) +
+  xlab("LoanOriginalAmount(USD)") +
+  ggtitle("BorrowerAPR vs LoanOriginalAmount")
 ```
+
+As the Loan amount increases the Borrower APR moves to a range between 0.1 to 0.2 from 0.05 to 0.4.
+There seems to be a negative corelation between Borrower APR and Loan Amount.
 
 ```{r echo=FALSE, BorrowerAPR_EmploymentStatusDuration }
 ggplot(aes(x = EmploymentStatusDuration, y = BorrowerAPR), data = ld) +
-  geom_point()
+  geom_jitter(alpha = 1/40) +
+  ggtitle("BorrowerAPR vs EmploymentStatusDuration")
 
 ```
+
+We want to improve the above plot by coverting the employment status duration from days to months.
 
 ```{r  BorrowerAPR_EmploymentStatusDuration_Inyears }
 ggplot(aes(x = (EmploymentStatusDuration%%12), y = BorrowerAPR), data = ld) +
-  geom_point()
+  geom_jitter(alpha=1/40) +
+  ggtitle("BorrowerAPR vs EmploymentStatusDuration in Months")
 
 ```
+
+We now see that Employment status duration month wise has a similar range of APR for all months. However we also observe
+that many loans with varying values of employment status duration have an APR whci is 0.35-0.36 percentage points.
 
 ```{r echo=FALSE, LoanAmount_EmploymentStatusDuration }
 ggplot(aes(x = EmploymentStatusDuration, y = LoanOriginalAmount), data = ld) +
-  geom_point()
+  geom_jitter(alpha = 1/40) +
+  ylab("LoanOriginalAmount(USD)") +
+  ggtitle("LoanOriginalAmount vs EmploymentStatusDuration")
 
 ```
+
+Here also we shall try to change the value of EmploymentStatus duration from days to months to revisit this graph
 
 ```{r echo=FALSE, LoanAmount_EmploymentStatusDuration2 }
 ggplot(aes(x = (EmploymentStatusDuration%%12), y = LoanOriginalAmount), data = ld) +
-  geom_point(alpha=1/10) 
+  geom_jitter(alpha=1/40) +
+  ylab("LoanOriginalAmount(USD)") +
+  ggtitle("LoanOriginalAmount vs EmploymentStatusDuration in months")
   
 ```
 
+We now see that Employment status duration for varying montha has similar Loan Amount distribution. But we also notice that maximum
+loans in each value of Employment status duration have a Loan Amounts of 10K$,15K$, 20K$ and 25K$.
+
 ```{r echo=FALSE, Term_LoanAmount }
-ggplot(aes(x = LoanOriginalAmount, y = Term), data = ld) +
-  geom_point()
+ggplot(aes(x = Term, y = LoanOriginalAmount), data = ld) +
+  geom_boxplot() +
+  ylab("LoanOriginalAmount(USD)") +
+  ggtitle("LoanOriginalAmount vs Term")
 
 ```
+
+We see that median Loan Amount increases with increase in the term distribution.
 
 ```{r echo=FALSE, ProsperScore_LoanAmount }
-ggplot(aes(x = LoanOriginalAmount, y = ProsperScore), data = ld) +
-  geom_point() +
-  scale_x_continuous(breaks = seq(0,35000,5000)) +
-  scale_y_continuous(breaks = seq(1,11,1))
+ggplot(aes(x = ProsperScore, y = LoanOriginalAmount), data = ld) +
+  geom_boxplot() +
+  ylab("LoanOriginalAmount(USD)") +
+  ggtitle("LoanOriginalAmount vs ProsperScore")
 
 ```
 
-```{r echo=FALSE, ProsperScore_BorrowerAPR}
-ggplot(aes(x = BorrowerAPR, y = ProsperScore), data = ld)+
-  geom_point() +
-  scale_y_continuous(breaks = seq(1,11,1))
-```
+We see that as the PropserScore increases the Median LoanOriginalAmount also tends to increase.
 
 ```{r echo=FALSE, ProsperScore_EmploymentStatusDuration}
-ggplot(aes(x = EmploymentStatusDuration, y = ProsperScore), data = ld)+
-  geom_point() 
+ggplot(aes(x = ProsperScore, y = EmploymentStatusDuration), data = ld)+
+  geom_boxplot() +
+  ggtitle("EmploymentStatusDuration vs ProsperScore")
 ```
 
-```{r echo=FALSE, ProsperScore_Term}
-ggplot(aes(x = Term, y = ProsperScore), data = ld)+
-  geom_point() 
+The median Employment status duration does not seem to change much with the propser score.
+
+```{r echo=FALSE, ProsperScore_BorrowerAPR}
+ggplot(aes(x = ProsperScore, y = BorrowerAPR), data = ld)+
+  geom_boxplot() +
+  ggtitle("BorrowerAPR vs ProsperScore")
 ```
+
+We can see that the median Borrower APR decreases with increasing Prosper Score..Hence we would want to further analyze this relationship
+as under. We shall group the data by prosper score and try to find the Borrower APR mean for each group and then plot the mean vs the 
+Prosper Score. To do this we shall use 'dplyr' package and derive a dataframe by grouping the existing dataframe by ProsperScore.
+
+```{r  BorrowerAPR_Mean_groupby_prosperscore}
+library(dplyr)
+ld_by_p_score <- group_by(ld, ProsperScore)
+ld.BorrowerAPR_by_P_Score_mean <- summarise(ld_by_p_score,
+                          BorrowerAPR_Mean = mean(BorrowerAPR),
+                          BorrowerAPR_Median = median(BorrowerAPR),
+                          LoanAmount_Mean = mean(LoanOriginalAmount),
+                          n = n())
+ld.BorrowerAPR_by_P_Score_mean <- arrange(ld.BorrowerAPR_by_P_Score_mean, ProsperScore)
+
+```
+
+```{r  BorrowerAPR_Mean_ProsperScore}
+ggplot(aes(x = ProsperScore, y = BorrowerAPR_Mean), data = ld.BorrowerAPR_by_P_Score_mean)+
+  geom_boxplot() +
+  ggtitle("BorrowerAPR_Mean vs ProsperScore")
+
+```
+
+As expected we find a very close inverse linear relationship between ProsperScore and the mean Borrower APR.
+We shall also try and find a relationship between the ProsperScore and the Loan Amount sanctioned.
+
+```{r  MeanLoanAmount_ProsperScore_Groupby}
+ggplot(aes(x = ProsperScore, y = LoanAmount_Mean), data = ld.BorrowerAPR_by_P_Score_mean)+
+  geom_boxplot() +
+  ylab("LoanOriginalAmount_Mean(USD)") +
+  ggtitle("LoanAmount_Mea vs ProsperScore")
+```
+
+ We see that there is an increasing linear relationship between the mean Loan Amount and the Prosper Score.
+
+
+
+ 
 
 # Bivariate Analysis
-
-> ** Term vs Borrower APR ANALYSIS**:  There are only three values of term ie
-12,36 and 60 months. However from this scatterplot we can arrive at the 
-conclusion that there is a wider range of Borrower APR values for the 36 months
-term compared to the 60 and 12 month terms.
-
-> ** Borrower APR vs LoanOriginalAmount ANALYSIS**:  As the Loan amount 
-increases the Borrower APR moves to a range between 0.1 to 0.2 from 0.05 to 0.4.
-There seems to be a negative corelation between Borrower APR and Loan Amount.
-
-> ** Borrower APR vs EmploymentStatus duration**:  We see that Employment status 
-duration has no effect on the Borrower APR
-
-> ** LoanOriginalAmount vs EmploymentStatus duration**:  We see that Employment 
-status duration has no effect on the Borrower APR
-
-> **  Term vs LoanOriginalAmount**:  We see that LoanOriginalAmount
-has no effect on the Term of the loan.
-
-> **  ProsperScore vs LoanOriginalAmount**:  We see that majority of loans having
-LoanOriginalAmounts in excess of 25000 have prosper score greater than 5.
-
-> **  ProsperScore vs BorrowerAPR**:  There does not seem to be any relation 
-between the proper score and the borrower APR.
-
-> **  ProsperScore vs EmploymentStatusDuration**:  There are very few loans
-with a low prosper score of 1 and duartion greater than 400 days.
-
-> **  ProsperScore vs Term**:  There seems to be a consistent distribution of
-loans with the entire range of prosper scores across the three terms.
-
 
 
 ###  Relationships of Interest
 
-The relationship between BorrowedAPR and the LoanOriginalAmount is interesting
-and will be further investiagted in the next section. Using this relationship
-along with the relationships of ProsperScore vs BorrowerAPR and ProsperScore
-vs LoanOriginalAmount can help us derive some intelligence from the data.
+By grouping the loans using the ProsperScore and then finding the BorrowerAPR mean of each group we were able to plot and see the
+relationship between the ProsperSCore and BorrowerAPR mean as well as ProsperScore and LoanOriginalAmount. We saw that highly rated loans
+had more Loan Amount Sanctioned and lesser Borrower APR.
 
 
 
 
 # Multivariate Plots Section
 
-
-
-```{r  BorrowerAPR_Mean_groupby_prosperscore}
-library(dplyr)
-ld_by_p_score <- group_by(ld, ProsperScore)
-ld.BorrowerAPR_by_P_Score_mean <- summarise(ld_by_p_score,
-                          BorrowerAPR_mean = mean(BorrowerAPR),
-                          BorrowerAPR_median = median(BorrowerAPR),
-                          LoanAmount = mean(LoanOriginalAmount),
-                          n = n())
-ld.BorrowerAPR_by_P_Score_mean <- arrange(ld.BorrowerAPR_by_P_Score_mean, ProsperScore)
-
-```
-
-```{r  MeanLoanAmount_ProsperScore_Groupby}
-ggplot(aes(x = ProsperScore, y = LoanAmount), data = ld.BorrowerAPR_by_P_Score_mean)+
-  geom_line()
-```
-
 ```{r  BorrowerAPR_PropserScore}
-ggplot(aes(x = ProsperScore, y = BorrowerAPR_mean), data = ld.BorrowerAPR_by_P_Score_mean)+
-  geom_line()
+ggplot(aes(x = ProsperScore, y = BorrowerAPR), data = ld)+
+  geom_jitter(alpha=1/40,aes(color = IsBorrowerHomeowner))+
+  geom_smooth() +
+  ggtitle("BorrowerAPR vs ProsperScore Colored by HomeOwner")
+
 ```
 
+We see that across the prosper score ratings People who are not Home owners(red color) tend to have higher Borrower APR. We also
+see that as the propser score increases (gets better) the Borrower APR goes down.
 
+```{r echo=FALSE, BorrowerAPR_LoanOriginalAmount_Colored_By_Homeowner}
+ggplot(aes(x = BorrowerAPR, y = LoanOriginalAmount), data = ld)+
+  geom_line(aes(color = IsBorrowerHomeowner)) +
+  ylab("LoanOriginalAmount(USD)") +
+  ggtitle("LoanOriginalAmount vs BorrowerAPR Colored by HomeOwner")
+```
+
+We wanted to further understand the relationship between Loan Original Amount and Borrower APR. By colouring the data using
+the HomeOwner variable we see that maximum loans having APR from 0.05 to 0.4 have been given to the HomeOwners.
+Loans with Loan Amounts more than 0.4 are mostly given to People without home ownership.
+
+```{r echo=FALSE, ProsperScore_LoanAmount_ColoredByHomeowner }
+ggplot(aes(x = ProsperScore, y = LoanOriginalAmount), data = ld) +
+  geom_jitter(alpha=1/40,aes(color = IsBorrowerHomeowner)) +
+  geom_smooth() +
+  ylab("LoanOriginalAmount(USD)") +
+  ggtitle("LoanOriginalAmount vs ProsperScore Colored by HomeOwner")
+
+```
+
+We wanted to extend the analysis of ProsperScore and the LoanOriginalAmount using the home owner variable.
+From the graph above we see that People who are not home owners form the majority of loans that have lesser loan original amounts
+as compared to loans of home owners.Loans upward of 10K$ are mostly concentrated with Home owners. It is also seen that Loans
+with prosper score of 9 and above are predominantly of Home owners.
 
 # Multivariate Analysis
 
-> **Relationship between Mean Loan Amount and the ProsperScore**: 
-We want to find a realtionship between the mean Loan amount sanctioned and the
-ProsperScore. We see that there is an increasing linear relationship between
-the mean Loan Amount and the Prosper Score.
+We have used the IsBorrowerHomeowner variable to extend our analysis between the ProsperScore , BorrowerAPR against the
+LoanOriginalAmount. The aim was to see if the variable IsBorrowerHomeOwner would give us any indication about the interplay 
+of these three variables.From the above two graphs we can conclude that Loans given to Homeowners have better APR, Larger LoanAmounts and better prosper scores as compared to non home owners.
 
-> **Relationship between Mean Borrower APR and the ProsperScore**:
-We want to find a relationship between the Mean Borrower APR and the Prosper 
-Score. To do this we group the loans in ld dataframe by Propser Score and 
-the find the mean Borrower APR of each group. Plotting this we find a very 
-close inverse linear relationship between ProsperScore and the mean Borrower APR.
 
 
 ------
@@ -439,25 +544,15 @@ close inverse linear relationship between ProsperScore and the mean Borrower APR
 
 
 ### Plot One
-```{r echo=FALSE, BorrowerAPR_LoanAmount}
-ggplot(aes(x = LoanOriginalAmount, y = BorrowerAPR), data = ld)+
-  geom_jitter(alpha=1/20)
+```{r  MeanLoanAmount_ProsperScore}
+ggplot(aes(x = ProsperScore, y = LoanAmount_Mean), data = ld.BorrowerAPR_by_P_Score_mean)+
+  geom_boxplot() +
+  ylab("LoanOriginalAmount_Mean(USD)") +
+  ggtitle("LoanOriginalAmount_Mean vs ProsperScore")
 ```
+
 
 ### Description One
-
-The Range of Borrower APR seems to clearly decrease as the loan amount increases
-Loans below 5K$ have an APR range from 0.05 to 0.4 whereas loans upward of
-30K$ have an APR between 0.1 and 0.2
-
-### Plot Two
-
-```{r  MeanLoanAmount_ProsperScore}
-ggplot(aes(x = ProsperScore, y = LoanAmount), data = ld.BorrowerAPR_by_P_Score_mean)+
-  geom_line()
-```
-
-### Description Two
 
 The mean Loan Amount of loans grouped by ProsperScore has a clear approximate
 increasing linear relationship with the ProsperScore. It can be understood 
@@ -465,18 +560,37 @@ logically that highly rated loans have a larger Loan Amount than loans with poor
 rating.
 
 
-### Plot Three
+### Plot Two
+
 ```{r  BorrowerAPR_Mean_PropserScore}
-ggplot(aes(x = ProsperScore, y = BorrowerAPR_mean), data = ld.BorrowerAPR_by_P_Score_mean)+
-  geom_line()
+ggplot(aes(x = ProsperScore, y = BorrowerAPR_Mean), data = ld.BorrowerAPR_by_P_Score_mean)+
+  geom_boxplot() +
+  ggtitle("BorrowerAPR_Mean vs ProsperScore")
 ```
 
-### Description Three
+
+### Description Two
 
 As an inverse of the previous graph we can see here that the APR mean falls
 with increasing Prosper Score. Again this can be understood in a way that the
 loans with higher Prosper SCore have a mean APR lower than the loans with poorer
 Prosper Scores.
+
+
+
+### Plot Three
+
+```{r  BorrowerAPR_PropserScore_ColoredByHomeOwner}
+ggplot(aes(x = ProsperScore, y = BorrowerAPR), data = ld)+
+  geom_jitter(alpha=1/40,aes(color = IsBorrowerHomeowner))+
+  geom_smooth() +
+  ggtitle("BorrowerAPR vs ProsperScore Colored by HomeOwner")
+
+```
+
+### Description Three
+We see that across the prosper score ratings People who are not Home owners(red color) tend to have higher Borrower APR. We also
+see that as the propser score increases (gets better) the Borrower APR goes down.
 
 ------
 
@@ -491,3 +605,5 @@ the interesting relationship between Borrowed APR and Loan Amount it was decided
 to explore this relationship further using the ProsperScore variable.
 Finally we succeeded in establishing that both the Loan Amount and Borrowed APR
 varied in a linear fashion compared to the ProsperScore variable.
+
+Further work can include fitting a model to Final Plots One and Two..
